@@ -88,8 +88,8 @@
 		    {
 			var pacman = lives.create(game.world.width - 235 + (30 * i), 517, 'pacman');
 			pacman.anchor.setTo(0.5, 0.5);
-			pacman.angle = 90;
-			pacman.alpha = 0.4;
+			pacman.angle = 0;
+			pacman.alpha = 0.3;
 		    }
         },
         checkKeys: function () {
@@ -183,10 +183,13 @@
         },
         eatDot: function (pacman, dot) {
             dot.kill();
+            this.score += 10;
+            this.scoreText.text = 'Score: ' +  this.score;
             if (this.dots.total === 0)
             {
                 this.dots.callAll('revive');
             }
+		
         },
         update: function () {
           
