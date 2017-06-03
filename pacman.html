@@ -1,23 +1,41 @@
 <!DOCTYPE HTML>
+
 <html>
+
 <head>
+
     <title>Pacman</title>
+
     <meta charset="utf-8">
+
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: #000;
+	    background-attachment : fixed;
+            background-size : 100% auto;
         }
     </style>
+
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+
 </head>
+
 <body>
-    <audio autoplay loop>
+
+ 
+
+        <audio autoplay loop>
+
             <source src="assets/loop.mp3" type="audio/mp3">
-    </audio>
+
+        </audio>
+
+    
+
     <script type="text/javascript">
-    var game = new Phaser.Game(448, 496, Phaser.AUTO);
+    var game = new Phaser.Game(500, 550, Phaser.AUTO);
     var Pacman = function (game) {
         this.map = null;
         this.layer = null;
@@ -34,7 +52,7 @@
         this.turning = Phaser.NONE;
         this.score=0;
         this.scoreText='';
-	    this.bonus=0;
+        this.bonus=0;
         this.bonusText='';
     };
     Pacman.prototype = {
@@ -48,11 +66,12 @@
         preload: function () {
             //  We need this because the assets are on github pages
             //  Remove the next 2 lines if running locally
-            this.load.baseURL = 'https://gregoriv.github.io/pacman/';
-            this.load.crossOrigin = 'gregoriv';
-            this.load.image('dot', 'assets/apple.png');
+         this.load.baseURL = 'https://gregoriv.github.io/pacman/';
+            this.load.crossOrigin = 'anonymous';
+            this.load.image('dot', 'assets/fire.png');
             this.load.image('tiles', 'assets/pacman-tiles.png');
             this.load.spritesheet('pacman', 'assets/gpacman.png', 32, 32);
+	    this.load.image('coin','assets/gapple.jpg');
             this.load.tilemap('map', 'assets/new-pacman-map.json', null, Phaser.Tilemap.TILED_JSON);
             //  Needless to say, graphics (C)opyright Namco
         },
@@ -61,10 +80,14 @@
             this.map.addTilesetImage('pacman-tiles', 'tiles');
             this.layer = this.map.createLayer('Pacman');
             this.dots = this.add.physicsGroup();
+            this.coins = this.add.physicsGroup();
             this.map.createFromTiles(7, this.safetile, 'dot', this.layer, this.dots);
+            this.map.createFromTiles(35, this.safetile, 'coin', this.layer, this.coins);
             //  The dots will need to be offset by 6px to put them back in the middle of the grid
             this.dots.setAll('x', 6, false, false, 1);
             this.dots.setAll('y', 6, false, false, 1);
+	    this.coins.setAll('x', 6, false, false, 1);
+            this.coins.setAll('y', 6, false, false, 1);
             //  Pacman should collide with everything except the safe tile
             this.map.setCollisionByExclusion([this.safetile], true, this.layer);
             //  Position Pacman at grid location 14x17 (the +8 accounts for his anchor)
@@ -77,20 +100,18 @@
             this.pacman.play('munch');
             this.move(Phaser.LEFT);
             this.bonusText = game.add.text(350, 500, 'Bonus: 0', { fontSize: '20px Arial', fill: 'orange' });
-            
-            
             this.scoreText = game.add.text(0, 500, 'Score: 0', { fontSize: '20px Arial', fill: 'yellow' });
-            
             lives = game.add.group();
             game.add.text(game.world.width - 340, 500, 'Lives : ', { fontSize: '20px Arial', fill: 'white' });
-            
-            for (var i = 0; i < 3; i++) 
-		    {
-			var pacman = lives.create(game.world.width - 235 + (30 * i), 517, 'pacman');
+            for (var i = 0; i < 3; i++) {
+			var pacman = lives.create(game.world.width - 235 + (30 * i), 517, 'capture');
 			pacman.anchor.setTo(0.5, 0.5);
-			pacman.angle = 0;
-			pacman.alpha = 0.3;
+  	pacman.angle = 0;
+  	pacman.alpha = 0.5;
 		    }
+     game.add.tween(sprite).to( { alpha: 0 }, 30000, Phaser.Easing.Linear.None, true);
+     game.add.tween(sprite1).to( { alpha: 0 }, 50000, Phaser.Easing.Linear.None, true);
+     game.add.tween(sprite2).to( { alpha: 0 }, 70000, Phaser.Easing.Linear.None, true);
         },
         checkKeys: function () {
             if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
@@ -183,18 +204,33 @@
         },
         eatDot: function (pacman, dot) {
             dot.kill();
-            this.score += 10;
-            this.scoreText.text = 'Score: ' +  this.score;
+         this.score+=10;
+         this.scoreText.text= 'Score: ' + this.score;
             if (this.dots.total === 0)
-            {
+           {
                 this.dots.callAll('revive');
             }
-		
+        },
+	     eatCoin: function(pacman,coin){
+		     
+            coin.kill();
+		     
+	    this.bonus+=100;
+            this.score+=100;
+            this.bonusText.text= 'Bonus: '+ this.bonus;
+            this.scoreText.text= 'Score: ' + this.bonus;
+            
+	   
+            if(this.coins.total===0)
+            {
+                this.coins.callAll('revive');
+            }
         },
         update: function () {
           
             this.physics.arcade.collide(this.pacman, this.layer);
             this.physics.arcade.overlap(this.pacman, this.dots, this.eatDot, null, this);
+            this.physics.arcade.overlap(this.pacman, this.coins, this.eatCoin, null, this);
             this.marker.x = this.math.snapToFloor(Math.floor(this.pacman.x), this.gridsize) / this.gridsize;
             this.marker.y = this.math.snapToFloor(Math.floor(this.pacman.y), this.gridsize) / this.gridsize;
             //  Update our grid sensors
@@ -212,5 +248,8 @@
     game.state.add('Game', Pacman, true);
     </script>
 
+
+
 </body>
+
 </html>
