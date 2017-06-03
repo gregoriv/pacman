@@ -30,6 +30,12 @@
         this.opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
         this.current = Phaser.NONE;
         this.turning = Phaser.NONE;
+        
+        this.score=0;
+        this.scoreText='';
+	    this.bonus=0;
+        this.bonusText='';
+
     };
     Pacman.prototype = {
         init: function () {
@@ -45,6 +51,7 @@
             this.load.baseURL = 'https://gregoriv.github.io/pacman/';
             this.load.crossOrigin = 'anonymous';
             this.load.image('dot', 'assets/apple.png');
+            this.load.image('bdot','assets/bdot.png');
             this.load.image('tiles', 'assets/pacman-tiles.png');
             this.load.spritesheet('pacman', 'assets/gpacman.png', 32, 32);
             this.load.tilemap('map', 'assets/new-pacman-map.json', null, Phaser.Tilemap.TILED_JSON);
@@ -55,10 +62,14 @@
             this.map.addTilesetImage('pacman-tiles', 'tiles');
             this.layer = this.map.createLayer('Pacman');
             this.dots = this.add.physicsGroup();
+            this.bdot = this.add.physicsGroup();
             this.map.createFromTiles(7, this.safetile, 'dot', this.layer, this.dots);
+            this.map.createFromTiles(16, this.safetile, 'bdots', this.layer, this.bdots);
             //  The dots will need to be offset by 6px to put them back in the middle of the grid
             this.dots.setAll('x', 6, false, false, 1);
             this.dots.setAll('y', 6, false, false, 1);
+            this.bdots.setAll('x', 6, false, false, 1);
+            this.bdots.setAll('y', 6, false, false, 1);
             //  Pacman should collide with everything except the safe tile
             this.map.setCollisionByExclusion([this.safetile], true, this.layer);
             //  Position Pacman at grid location 14x17 (the +8 accounts for his anchor)
@@ -70,6 +81,32 @@
             this.cursors = this.input.keyboard.createCursorKeys();
             this.pacman.play('munch');
             this.move(Phaser.LEFT);
+            
+            this.bonusText = game.add.text(350, 500, 'Bonus: 0', { fontSize: '20px Arial', fill: 'orange' });
+            
+            
+            this.scoreText = game.add.text(0, 500, 'Score: 0', { fontSize: '20px Arial', fill: 'yellow' });
+            
+            lives = game.add.group();
+            game.add.text(game.world.width - 340, 500, 'Lives : ', { fontSize: '20px Arial', fill: 'white' });
+            
+            for (var i = 0; i < 3; i++) 
+		    {
+			   var pacman = lives.create(game.world.width - 235 + (30 * i), 517, 'pacman');
+			   pacman.anchor.setTo(0.5, 0.5);
+			   pacman.angle = 90;
+			   pacman.alpha = 0.4;
+		    }
+	        var sprite = game.add.sprite(317, 465, 'cherry');
+	        var sprite1 = game.add.sprite(87, 265, 'cherry');
+	        var sprite2 = game.add.sprite(355, 192, 'cherry');
+            
+		
+	    
+	        game.add.tween(sprite).to( { alpha: 0 }, 30000, Phaser.Easing.Linear.None, true);
+	        game.add.tween(sprite1).to( { alpha: 0 }, 50000, Phaser.Easing.Linear.None, true);
+            game.add.tween(sprite2).to( { alpha: 0 }, 70000, Phaser.Easing.Linear.None, true);
+            
         },
         checkKeys: function () {
             if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
@@ -162,10 +199,25 @@
         },
         eatDot: function (pacman, dot) {
             dot.kill();
+            this.score += 10;
+            this.scoreText.text = 'Score: ' +  this.score;
             if (this.dots.total === 0)
             {
                 this.dots.callAll('revive');
             }
+            
+         eatserdot: function (pacman, serdot) {
+       
+           bdot.kill();
+           //var audio = new Audio('assets/bonus.mp3');
+           //audio.play()
+	       this.bonus+=100;															
+	       this.bonusText.text= 'Bonus: ' + this.bonus;
+		
+           if (this.bdots.total === 0)
+           {
+               this.bdots.callAll('revive');
+           }
         },
         update: function () {
           
