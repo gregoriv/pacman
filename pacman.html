@@ -91,6 +91,15 @@
 			pacman.angle = 0;
 			pacman.alpha = 0.3;
 		    }
+		var sprite = game.add.sprite(317, 465, 'cherry');
+	    var sprite1 = game.add.sprite(87, 265, 'cherry');
+	    var sprite2 = game.add.sprite(355, 192, 'cherry');
+            
+		
+	    
+	    game.add.tween(sprite).to( { alpha: 0 }, 30000, Phaser.Easing.Linear.None, true);
+	    game.add.tween(sprite1).to( { alpha: 0 }, 50000, Phaser.Easing.Linear.None, true);
+            game.add.tween(sprite2).to( { alpha: 0 }, 70000, Phaser.Easing.Linear.None, true);
         },
         checkKeys: function () {
             if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
