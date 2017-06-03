@@ -32,6 +32,10 @@
         this.opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
         this.current = Phaser.NONE;
         this.turning = Phaser.NONE;
+        this.score=0;
+        this.scoreText='';
+	    this.bonus=0;
+        this.bonusText='';
     };
     Pacman.prototype = {
         init: function () {
@@ -72,6 +76,21 @@
             this.cursors = this.input.keyboard.createCursorKeys();
             this.pacman.play('munch');
             this.move(Phaser.LEFT);
+            this.bonusText = game.add.text(350, 500, 'Bonus: 0', { fontSize: '20px Arial', fill: 'orange' });
+            
+            
+            this.scoreText = game.add.text(0, 500, 'Score: 0', { fontSize: '20px Arial', fill: 'yellow' });
+            
+            lives = game.add.group();
+            game.add.text(game.world.width - 340, 500, 'Lives : ', { fontSize: '20px Arial', fill: 'white' });
+            
+            for (var i = 0; i < 3; i++) 
+		    {
+			var pacman = lives.create(game.world.width - 235 + (30 * i), 517, 'pacman');
+			pacman.anchor.setTo(0.5, 0.5);
+			pacman.angle = 90;
+			pacman.alpha = 0.4;
+		    }
         },
         checkKeys: function () {
             if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
