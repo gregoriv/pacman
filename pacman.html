@@ -70,8 +70,8 @@
 		this.apples = this.add.physicsGroup();
 	    this.gapples = this.add.physicsGroup();
             
-		this.map.createFromTiles(7, this.safetile, 'dot', this.layer, this.dots);
-             this.map.createFromTiles(16, this.safetile, 'bdot', this.layer, this.serdots);
+		this.map.createFromTiles(7, this.safetile, 'dot', this.layer, this.apples);
+             this.map.createFromTiles(16, this.safetile, 'bdot', this.layer, this.gapples);
             //  The dots will need to be offset by 6px to put them back in the middle of the grid
             this.apples.setAll('x', 6, false, false, 1);
             this.apples.setAll('y', 6, false, false, 1);
