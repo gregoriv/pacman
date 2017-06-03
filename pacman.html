@@ -55,7 +55,7 @@
             //  Remove the next 2 lines if running locally
             this.load.baseURL = 'https://gregoriv.github.io/pacman/';
             this.load.crossOrigin = 'anonymous';
-            this.load.image('dot', 'assets/dot.png');
+            this.load.image('dot', 'assets/apple.png');
 	        this.load.image('bdot','assets/gapple.png');
             this.load.image('tiles', 'assets/pacman-tiles.png');
             this.load.spritesheet('pacman', 'assets/gpacman.png', 32, 32);
@@ -71,7 +71,7 @@
 	    this.bdots = this.add.physicsGroup();
             
 		this.map.createFromTiles(7, this.safetile, 'dot', this.layer, this.dots);
-             this.map.createFromTiles(16, this.safetile, 'bdots', this.layer, this.serdots);
+             this.map.createFromTiles(16, this.safetile, 'bdot', this.layer, this.serdots);
             //  The dots will need to be offset by 6px to put them back in the middle of the grid
             this.dots.setAll('x', 6, false, false, 1);
             this.dots.setAll('y', 6, false, false, 1);
